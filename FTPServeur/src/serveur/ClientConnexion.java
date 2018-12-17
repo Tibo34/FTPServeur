@@ -78,6 +78,7 @@ public class ClientConnexion implements Runnable{
 	           		sendFile();
 	           		break;
 	           	case "DELE":
+	           		
 	           		deleteFile();
 	           		break;
 	           	case "QUIT":
@@ -101,10 +102,17 @@ public class ClientConnexion implements Runnable{
 	      writer.close();
 	   }
  	   
- 	   private void deleteFile() throws IOException {
- 		   String answer=read();
-		System.out.println(answer);
-		String file=sc.nextLine();
+ 	   private void deleteFile() throws IOException { 		   
+ 		
+		String file="";
+		boolean r=true;
+		while(r) {
+			file=sc.nextLine();
+			if(!file.equals("")) {
+				r=false;
+			}
+		}
+		System.out.println("Fichier envoie"+file);
 		writer.write(file);
 		writer.flush();
 		System.out.println(read());
@@ -113,8 +121,7 @@ public class ClientConnexion implements Runnable{
 
 	private void displayEndMess() throws IOException {
 		String endMess=read();
-		System.out.println(endMess);
-		
+		System.out.println(endMess);		
 	}
 
 	/**
@@ -235,5 +242,7 @@ public class ClientConnexion implements Runnable{
 			 }
 			 output.close();			
 		 }
+	   
+	   
 
 	}

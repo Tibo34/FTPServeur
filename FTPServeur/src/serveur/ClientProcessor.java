@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Scanner;
 
 public class ClientProcessor implements Runnable {
 	
@@ -24,6 +25,7 @@ public class ClientProcessor implements Runnable {
 	   private PrintWriter writer = null;
 	   private BufferedInputStream reader = null;
 	   private String pathCourant="D:\\Java-other";
+	   
 	   
 	   public ClientProcessor(Socket s) {
 		   sock=s;
@@ -96,17 +98,16 @@ public class ClientProcessor implements Runnable {
 		   }
 	   
 	  private void deleteFile() throws IOException {
-		 String files=displayFile();
-		writer.write("Quel fichier supprimé? \n \n"+files);
+		String files=displayFile();
+		writer.write(files+" \n Quel fichier supprimé? \n");
 		writer.flush();
-		String answer=read();
-		System.out.println(answer);
+		String answer=read();		
 		File file=isExist(answer, getFileCourant());
-		System.out.println(file.getName());
+		
 		boolean r=file.delete();
 		if(r) {
 			System.out.println("Réussi");
-			writer.write("Réussié");
+			writer.write("Réussi");
 			
 		}
 		else {
@@ -177,7 +178,7 @@ public class ClientProcessor implements Runnable {
 		   String str="";
 		   for(File f : files) {
 			   str+="\n "+f.getName();
-		   }
+		   }		  
 		return str;
 	}
 
