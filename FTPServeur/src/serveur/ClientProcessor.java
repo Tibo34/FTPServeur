@@ -23,6 +23,7 @@ public class ClientProcessor implements Runnable {
 	   private Socket sock;
 	   private PrintWriter writer = null;
 	   private BufferedInputStream reader = null;
+	   private String pathCourant="D:\\Java-other";
 	   
 	   public ClientProcessor(Socket s) {
 		   sock=s;
@@ -57,26 +58,14 @@ public class ClientProcessor implements Runnable {
 		            String toSend = "";		            
 		            switch(response.toUpperCase()){
 		               case "RETR"://Demande de récupération de fichier
-		                  toSend ="Téléchargement : ";
-		                  File f=new File("texte.txt");
-		                  File copy=new File("d:/Documents/copie.txt");		                 
-		                  Files.copy(f.toPath(),copy.toPath());
-		                 toSend=ReadFile(f);
-//		                  String filetext=ReadFile(f);		                 
-//		                 WriteFile(copy,filetext);
-		                 //System.out.println(filetext);
-		                  break;
+		            	   System.out.println("Commande RETR");
+		            	   sendFile();              
+                           break;
 		               case "STOR"://Demande de transfert de fichier
-		                  toSend = "Fichier tranferet";
-		                  String dest="d:/Documents/";
-		                  File download=new File("d:/Documents/copie.txt");
-		                  File file=new File("copie.txt");
-		                  Files.copy(download.toPath(), file.toPath());
+		                 loadFile();
 		                  break;
 		               case "DELE"://Demande de suppression de fichier
-		                  toSend = "Fichier supprimé";
-		                  File d=new File("d:/Documents/copie.txt");
-		                  Files.deleteIfExists(d.toPath());		               
+		                  deleteFile();               
 		                  break;
 		               case "QUIT"://Fin de transfert ou abandon
 		                  toSend = "Communication terminée"; 
@@ -106,15 +95,116 @@ public class ClientProcessor implements Runnable {
 		      }
 		   }
 	   
-	   /**
+	  private void deleteFile() throws IOException {
+		 String files=displayFile();
+		writer.write("Quel fichier supprimé? \n \n"+files);
+		writer.flush();
+		String answer=read();
+		System.out.println(answer);
+		File file=isExist(answer, getFileCourant());
+		System.out.println(file.getName());
+		boolean r=file.delete();
+		if(r) {
+			System.out.println("Réussi");
+			writer.write("Réussié");
+			
+		}
+		else {
+			System.out.println("Echec");
+			writer.write("Echec");
+		}
+		writer.flush();
+	}
+
+	private void loadFile() throws IOException {
+		    String fileName=getFileName();
+     		String fileText=getFileText();
+     		String path="D:\\Java-other";
+		   	 File file=new File(path+"/"+fileName);
+			 FileOutputStream output;			
+			output = new FileOutputStream(file);
+			for(int i=0;i<fileText.length();i++) {			
+				 int c=(int) fileText.charAt(i);			
+				 output.write(c);
+			 }
+			System.out.println("File reçu");
+			 output.close();		
+	}
+
+	
+
+	private String getFileText() throws IOException {	
+		writer.write("envoie texte");
+		writer.flush();
+		String fileText=read();
+		return fileText;
+	}
+
+	private String getFileName() throws IOException {		
+		writer.write("Saisir un  fichier : ");
+		writer.flush();		
+		String fileName=read();		
+		return fileName;
+	}
+
+	private void sendFile() {
+		   String toSend ="Téléchargement de: \n\n Quel fichier vouler-vous téléchargé ? ";
+		   String answer="";
+		   String strFile="";
+		   toSend+=displayFile();
+		   File file=null;
+		   writer.write(toSend);
+		   writer.flush();
+		   try {			   
+			  answer=read();
+			  file=isExist(answer,getFileCourant());                 
+		      strFile=readFile(file);          
+			  
+			} catch (IOException e) {
+				System.out.println("Erreur de connection");
+				e.printStackTrace();
+			}
+		  
+           writer.write(strFile);
+           writer.flush();
+           if(file!=null) {
+        	   System.out.println("Fichier envoyé");
+           }           
+	}
+
+	private String displayFile() {		
+		   File[] files=getFileCourant();
+		   String str="";
+		   for(File f : files) {
+			   str+="\n "+f.getName();
+		   }
+		return str;
+	}
+
+	private File[] getFileCourant() {
+		File repertoire = new File(pathCourant);
+		   File file;
+		   File[] files=repertoire.listFiles();
+		   return files;
+	}
+	
+	private File isExist(String answer, File[] files) {
+		for(File f : files) {
+			if(f.getName().equals(answer)) {
+				return f;
+			}
+		}
+		return null;
+	}
+
+	/**
 	    * lit le fichier
 	    * @param f
 	    * @return
 	    * @throws IOException
 	    */
-	   private String ReadFile(File f) throws IOException {		   
-		   String str="";		  
-		   System.out.println(f.exists());		   
+	   private String readFile(File f) throws IOException {		   
+		   String str="";		   	   
 		   if(f.exists()) {			   
 			   FileInputStream file=new FileInputStream(f);			   
 			   int lettre;
@@ -125,7 +215,7 @@ public class ClientProcessor implements Runnable {
 		return str;
 	  }
 	   
-	 private void WriteFile(File f,String text) throws IOException {
+	 private void writeFile(File f,String text) throws IOException {
 		 FileOutputStream output=new FileOutputStream(f);
 		 for(int i=0;i<text.length();i++) {			
 			 int c=(int) text.charAt(i);			
@@ -140,7 +230,7 @@ public class ClientProcessor implements Runnable {
 		      stream = reader.read(b);
 		      response = new String(b, 0, stream);
 		      return response;
-		   }
+	}
 
 
 }

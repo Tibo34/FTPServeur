@@ -26,9 +26,9 @@ public class Main {
          String user=extractUser(p);
          String pwd=extractPWD(p);
          System.out.println(ip+" "+port+" "+user+" "+pwd);
-         Ftp ftp = new Ftp();
+         Ftp ftp = new Ftp(ip,port,user,pwd);
          //ftp.setFile(f);
-        
+         
          try{
         	 ftp.connect();
          }
