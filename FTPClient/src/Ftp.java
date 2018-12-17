@@ -39,13 +39,17 @@ public class Ftp {
 
    }
 
-   public Ftp(String pUser,String pwd){
+//   public Ftp(String ip,int port,String pUser,String pwd){
+//
+//	   this(ip, port, pUser,pwd);      
+//	   //this("127.0.0.1",1500,"molina","123");
+//   }
 
-	   this("212.27.63.3", 21, pUser,pwd);      
-	   //this("127.0.0.1",1500,"molina","123");
-   }
+   public Ftp() {
+	// TODO Auto-generated constructor stub
+}
 
-   public void setFile(File f) {
+public void setFile(File f) {
 	   file=f;
    }
    
