@@ -11,8 +11,7 @@ public class FtpServeur {
 	private int port=1500;
 	private ServerSocket server;
 	private int fileAttente = 100;
-	
-	
+		
 	public FtpServeur() {
 		port=getPortFree();
 		server=setSocket(port,fileAttente);		
@@ -29,17 +28,11 @@ public class FtpServeur {
 		int p=port;
 		ServerSocket Socket=null;
 		for( ; p <= 65535&&Socket==null; p++){
-
 	         try {
-
 	        	 Socket= new ServerSocket(p);
-
 	         } catch (IOException e) {
-
 	            System.err.println("Le port " + port + " est déjà utilisé ! ");
-
 	         }
-
 	      }
 		System.out.println(p);
 		return p-1;
@@ -70,7 +63,7 @@ public class FtpServeur {
 
 	            while(isRunning){               
 
-	               try {
+	               try {	            	   
 	                  //On attend une connexion d'un client
 	                  Socket client = server.accept();              
 	                  //Une fois reçue, on la traite dans un thread séparé

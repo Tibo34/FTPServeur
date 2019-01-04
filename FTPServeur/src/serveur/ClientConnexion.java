@@ -77,8 +77,7 @@ public class ClientConnexion implements Runnable{
 	           	case "STOR": // envoie de fichier sur le serveur
 	           		sendFile();
 	           		break;
-	           	case "DELE":
-	           		
+	           	case "DELE":	           		
 	           		deleteFile();
 	           		break;
 	           	case "QUIT":
