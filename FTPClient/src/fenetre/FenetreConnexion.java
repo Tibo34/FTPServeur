@@ -27,8 +27,20 @@ public class FenetreConnexion extends JFrame {
 	private JTextField txtPort=new JTextField(10);
 	private JTextField txtIP=new JTextField(10);
 	private JTextField txtcommande=new JTextField(20);
+	
+	public JTextField getTxtcommande() {
+		return txtcommande;
+	}
+
+
+	public void setTxtcommande(JTextField txtcommande) {
+		this.txtcommande = txtcommande;
+	}
+
+
 	private JButton bouton=new JButton("connexion");
 	private Label infoConnexion=new Label("information serveur.");
+	private ClientConnexion connexion=null;
 
 	public FenetreConnexion() {
 		super("Connexion serveur FTP");
@@ -36,6 +48,7 @@ public class FenetreConnexion extends JFrame {
 		add(serveur);
 		serveur.setSize(width, 100);
 		add(info);
+		txtcommande.addActionListener(new SendCommandeAction(this,connexion));
 		info.add(txtcommande);
 		info.add(infoConnexion);
 		info.setLayout(new GridLayout(2, 1));
@@ -90,6 +103,16 @@ public class FenetreConnexion extends JFrame {
 
 	public void setTxtIP(JTextField txtIP) {
 		this.txtIP = txtIP;
+	}
+
+
+	public ClientConnexion getConnexion() {
+		return connexion;
+	}
+
+
+	public void setConnexion(ClientConnexion connexion) {
+		this.connexion = connexion;
 	}
 	
 	

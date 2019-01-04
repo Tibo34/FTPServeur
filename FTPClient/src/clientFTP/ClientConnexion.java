@@ -27,6 +27,7 @@ public class ClientConnexion implements Runnable{
 	   private String name = "Client-"; 
 	   private String path="D:\\Documents";
 	   private FenetreConnexion fenetre;
+	   private String reponse;
 	   
 
 	   public ClientConnexion(String host, int port,FenetreConnexion f){
@@ -202,7 +203,7 @@ public class ClientConnexion implements Runnable{
 	         boolean encore = true;
 	         while (encore) {
 	        	displayMessage("Vous avez le droit aux commande "+getListCommandes());
-	            reponse = sc.nextLine().toUpperCase();
+	            reponse = fenetre.getTxtcommande().getText();
 	            if(listCommands.contains(reponse)) {
 	            	encore=false;
 	            }
@@ -245,6 +246,14 @@ public class ClientConnexion implements Runnable{
 			 }
 			 output.close();			
 		 }
+
+	public String getReponse() {
+		return reponse;
+	}
+
+	public void setReponse(String reponse) {
+		this.reponse = reponse;
+	}
 	   
 	   
 
