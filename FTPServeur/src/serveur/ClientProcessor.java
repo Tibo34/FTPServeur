@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -25,21 +26,23 @@ public class ClientProcessor implements Runnable {
 	   private PrintWriter writer = null;
 	   private BufferedInputStream reader = null;
 	   private String pathCourant="D:\\Java-other";
+	   private ArrayList<String> excludeFile=new ArrayList<>();
 	   
 	   
 	   public ClientProcessor(Socket s) {
 		   sock=s;
+		   excludeFile.add(".git");
+		   excludeFile.add(".metadata");
+		   excludeFile.add(".recommenders");
+		   excludeFile.add("FTPClient");
+		   excludeFile.add("FTPServeur");
+		   excludeFile.add("README.md");
 	   }
 	   
 	   public void run(){
-
 		      System.err.println("Lancement du traitement de la connexion cliente");
-
-
 		      boolean closeConnexion = false;
-
 		      //tant que la connexion est active, on traite les demandes
-
 		      while(!sock.isClosed()){
 		         try {
 		            //Ici, nous n'utilisons pas les mêmes objets que précédemment
@@ -77,10 +80,7 @@ public class ClientProcessor implements Runnable {
 		                  toSend = "Commande inconnu !";                     
 		                  break;
 		            }
-		            //On envoie la réponse au client
-		            writer.write(toSend);
-		            //envoie de la requete
-		            writer.flush();
+		            send(toSend);
 		            if(closeConnexion){
 		               System.err.println("COMMANDE CLOSE DETECTEE ! ");
 		               writer = null;
@@ -99,16 +99,13 @@ public class ClientProcessor implements Runnable {
 	   
 	  private void deleteFile() throws IOException {
 		String files=displayFile();
-		writer.write(files+" \n Quel fichier supprimé? \n");
-		writer.flush();
+		send(files+" \n Quel fichier supprimé? \n");
 		String answer=read();		
 		File file=isExist(answer, getFileCourant());
-		
 		boolean r=file.delete();
 		if(r) {
 			System.out.println("Réussi");
 			writer.write("Réussi");
-			
 		}
 		else {
 			System.out.println("Echec");
@@ -135,63 +132,68 @@ public class ClientProcessor implements Runnable {
 	
 
 	private String getFileText() throws IOException {	
-		writer.write("envoie texte");
-		writer.flush();
+		send("envoie texte");
 		String fileText=read();
 		return fileText;
 	}
 
 	private String getFileName() throws IOException {		
-		writer.write("Saisir un  fichier : ");
-		writer.flush();		
+		send("Saisir un  fichier : ");
 		String fileName=read();		
 		return fileName;
 	}
 
-	private void sendFile() {
-		   String toSend ="Téléchargement de: \n\n Quel fichier vouler-vous téléchargé ? ";
+	private void sendFile() {		   
 		   String answer="";
 		   String strFile="";
-		   toSend+=displayFile();
+		   String toSend=displayFile();
 		   File file=null;
-		   writer.write(toSend);
-		   writer.flush();
+		   send(toSend);
 		   try {			   
 			  answer=read();
 			  file=isExist(answer,getFileCourant());                 
-		      strFile=readFile(file);          
+		      strFile=readFile(file);     
 			  
 			} catch (IOException e) {
 				System.out.println("Erreur de connection");
 				e.printStackTrace();
-			}
-		  
-           writer.write(strFile);
-           writer.flush();
+			}		  
+           send(strFile);
            if(file!=null) {
         	   System.out.println("Fichier envoyé");
            }           
+	}
+
+	private void send(String str) {
+		writer.write(str);
+        writer.flush();
 	}
 
 	private String displayFile() {		
 		   File[] files=getFileCourant();
 		   String str="";
 		   for(File f : files) {
-			   str+="\n "+f.getName();
+			   if(!excludeFile.contains(f.getName())) {
+				   str+=f.getName()+"\n";
+			   }
 		   }		  
 		return str;
 	}
+	
 
 	private File[] getFileCourant() {
 		File repertoire = new File(pathCourant);
-		   File file;
-		   File[] files=repertoire.listFiles();
-		   return files;
+		File[] files=repertoire.listFiles();
+		return files;
 	}
 	
 	private File isExist(String answer, File[] files) {
+		System.out.println(answer);
 		for(File f : files) {
+			System.out.println(answer);
+			System.out.println(f.getName());
 			if(f.getName().equals(answer)) {
+				System.out.println(f.getName());
 				return f;
 			}
 		}
@@ -224,12 +226,10 @@ public class ClientProcessor implements Runnable {
 		 }
 	 }
 
-	private String read() throws IOException{    
-		      String response = "";
-		      int stream;
+	private String read() throws IOException{ 
 		      byte[] b = new byte[4096];
-		      stream = reader.read(b);
-		      response = new String(b, 0, stream);
+		      int stream= reader.read(b);
+		     String response = new String(b, 0, stream);
 		      return response;
 	}
 

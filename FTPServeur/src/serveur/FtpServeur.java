@@ -82,11 +82,8 @@ public class FtpServeur {
 	               server = null;
 	               }
 	         }
-
-	      });      
-
+	      });
 	      t.start();
-
 	   }
 	 
 	 

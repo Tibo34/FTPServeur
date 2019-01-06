@@ -1,5 +1,6 @@
 package clientFTP;
 
+import java.awt.Checkbox;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -107,7 +108,7 @@ public class ClientConnexion implements Runnable{
  		   fenetre.getInfoConnexion().setText(str);
  	   }
  	   
- 	   public void deleteFile() throws IOException { 
+ 	 public void deleteFile() throws IOException { 
  		String file="";
 		boolean r=true;
 		while(r) {
@@ -116,9 +117,11 @@ public class ClientConnexion implements Runnable{
 				r=false;
 			}
 		}
-		displayMessage("Fichier envoie"+file);
+		deleteFile(file);
+	}
+
+	public void deleteFile(String file) {
 		send(file);		
-		displayMessage(read());		
 	}
 
 	public void displayEndMess() throws IOException {
@@ -142,22 +145,17 @@ public class ClientConnexion implements Runnable{
           }          
 	}
  	  
- 	 private String readFile(File f) throws IOException {		   
-		   String str=""; 
-		   if(f.exists()) {			   
-			   FileInputStream file=new FileInputStream(f);			   
-			   int lettre;
-			   while((lettre=file.read())!=-1) {
-				    str+=(char)lettre;
-			   }
-         }
-		return str;
-	  }
-
-	 private String getFileText() throws IOException {
-		 String strTextFile="";		
-	   	strTextFile=read();		
-		return strTextFile;
+ 	  public void sendFile(File file) throws IOException {
+ 		 send(file.getName());
+ 		String toSend= readFile(file);			
+		 send(toSend);		   	 
+          if(!toSend.equals("")) {
+       	   		System.out.println("Fichier envoyé");
+          }
+          else {
+        	  System.out.println("Fichier  non envoyé");
+          }   
+		
 	}
 
 	private File getFileSend() {		
@@ -170,11 +168,44 @@ public class ClientConnexion implements Runnable{
 	            	encore=false;
 	            }
 	       }
-         File file = new File(reponse);
+	     File file = new File(reponse);
 		 send(file.getName());		 
 	      return file;		
 	}
-	
+
+	/**
+ 	   * lecture du fichier pour l'envoie
+ 	   * @param f
+ 	   * @return
+ 	   * @throws IOException
+ 	   */
+ 	 private String readFile(File f) throws IOException {		   
+		   String str=""; 
+		   if(f.exists()) {			   
+			   FileInputStream file=new FileInputStream(f);			   
+			   int lettre;
+			   while((lettre=file.read())!=-1) {
+				    str+=(char)lettre;
+			   }
+         }
+		return str;
+	  }
+ 	 
+ 	 /**
+ 	  * récupération du texte du fichier
+ 	  * @return
+ 	  * @throws IOException
+ 	  */
+	 private String getFileText() throws IOException {
+		String strTextFile="";		
+	   	strTextFile=read();		
+		return strTextFile;
+	}
+
+	 /**
+	  * récupération du non
+	  * @return
+	  */
 	private String getFile() {		
 			String reponse = "";
 	         boolean encore = true;
@@ -185,9 +216,32 @@ public class ClientConnexion implements Runnable{
 	            	encore=false;
 	            }
 	       }        
-		send(reponse);		  
-	      return reponse;		
+				  
+	    return reponse;		
 	}
+
+	
+	private void writeFile() throws IOException {
+	   	String fileName=getFile();
+	   	writeFile(fileName);	   		
+	 }
+
+	public void writeFile(String fileName) throws IOException {
+		send(fileName);
+		String fileText=getFileText();
+	   	 File file=new File(path+"/"+fileName);		   	 
+		 FileOutputStream output;			
+		output = new FileOutputStream(file);
+		for(int i=0;i<fileText.length();i++) {			
+			 int c=(int) fileText.charAt(i);			
+			 output.write(c);
+		 }
+		 output.close();		
+	}
+
+	
+	
+	
 
 	//Méthode qui permet d'envoyer des commandeS de façon aléatoire
 
@@ -215,29 +269,14 @@ public class ClientConnexion implements Runnable{
 	//Méthode pour lire les réponses du serveur
 
 	   public String read() throws IOException{  
-	      String response = "";
-	      int stream;
-	      byte[] b = new byte[4096];	     
-	      stream = reader.read(b);
-	      response = new String(b, 0, stream);
-	      return response;
+		  byte[] b = new byte[4096];
+		  int stream = reader.read(b);
+		  System.out.println(new String(b, 0, stream));
+	      return new String(b, 0, stream);
 	   }   
 	   
 	   
-	   public void writeFile() throws IOException {
-		   	String fileName=getFile();
-		   	String fileText=getFileText();
-		   	 File file=new File(path+"/"+fileName);		   	 
-			 FileOutputStream output;			
-			output = new FileOutputStream(file);
-			for(int i=0;i<fileText.length();i++) {			
-				 int c=(int) fileText.charAt(i);			
-				 output.write(c);
-			 }
-			 output.close();			
-		 }
-
-	public boolean getEncore() {
+	   public boolean getEncore() {
 		return encore;
 	}
 

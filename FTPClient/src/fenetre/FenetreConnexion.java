@@ -1,34 +1,40 @@
 package fenetre;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import Actions.EnvoieAction;
+import Actions.QuitAction;
+import Actions.RecevoirAction;
+import Actions.SuppressionAction;
+import Actions.connexionFTPServeur;
 import clientFTP.ClientConnexion;
 
-public class FenetreConnexion extends JFrame {
+public class FenetreConnexion extends JFrame implements WindowListener {
 	
 	private int width=800;
 	private int height=800;
-	private int port;
-	private String adressIP;
+	private int port=2345;
+	private String adressIP="127.0.0.1";
 	private JPanel serveur=new JPanel();
 	private JPanel info=new JPanel();
 	private JPanel commande=new JPanel();
 	private Label nomServeur=new Label("Nom du serveur:");
 	private Label labPort=new Label("Port:");
 	private Label labAdresseIP=new Label("Adresse IP:");
-	private JTextField txtServeur=new JTextField(10);	
-	private JTextField txtPort=new JTextField(10);
-	private JTextField txtIP=new JTextField(10);	
+	private JTextField txtServeur=new JTextField("serveur",10);	
+	private JTextField txtPort=new JTextField(new Integer(port).toString(),10);
+	private JTextField txtIP=new JTextField(adressIP,10);	
 	private JButton boutonConnexion=new JButton("connexion");
-	private JButton boutonEnvoie=new JButton("Evnoie");
+	private JButton boutonEnvoie=new JButton("Envoie");
 	private JButton boutonRecevoir=new JButton("Télécharger");
 	private JButton boutonSuppr=new JButton("Supprimer fichier");
 	private JButton boutonQuit=new JButton("Quitter");
@@ -49,8 +55,7 @@ public class FenetreConnexion extends JFrame {
 		commande.add(boutonEnvoie);
 		commande.add(boutonRecevoir);
 		commande.add(boutonSuppr);
-		commande.add(boutonQuit);
-		
+		commande.add(boutonQuit);		
 		info.add(commande);
 		commande.setLayout(new FlowLayout());
 		
@@ -121,6 +126,46 @@ public class FenetreConnexion extends JFrame {
 	public void setConnexion(ClientConnexion connexion) {
 		this.connexion = connexion;
 	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		System.exit(1);		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		System.exit(1);		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+	
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub		
+	}
+
+
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub		
+	}
+	
 	
 	
 
