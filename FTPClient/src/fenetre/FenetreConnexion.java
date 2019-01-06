@@ -20,38 +20,41 @@ public class FenetreConnexion extends JFrame {
 	private String adressIP;
 	private JPanel serveur=new JPanel();
 	private JPanel info=new JPanel();
+	private JPanel commande=new JPanel();
 	private Label nomServeur=new Label("Nom du serveur:");
 	private Label labPort=new Label("Port:");
 	private Label labAdresseIP=new Label("Adresse IP:");
 	private JTextField txtServeur=new JTextField(10);	
 	private JTextField txtPort=new JTextField(10);
-	private JTextField txtIP=new JTextField(10);
-	private JTextField txtcommande=new JTextField(20);
-	
-	public JTextField getTxtcommande() {
-		return txtcommande;
-	}
-
-
-	public void setTxtcommande(JTextField txtcommande) {
-		this.txtcommande = txtcommande;
-	}
-
-
-	private JButton bouton=new JButton("connexion");
+	private JTextField txtIP=new JTextField(10);	
+	private JButton boutonConnexion=new JButton("connexion");
+	private JButton boutonEnvoie=new JButton("Evnoie");
+	private JButton boutonRecevoir=new JButton("Télécharger");
+	private JButton boutonSuppr=new JButton("Supprimer fichier");
+	private JButton boutonQuit=new JButton("Quitter");
 	private Label infoConnexion=new Label("information serveur.");
 	private ClientConnexion connexion=null;
-
+	
 	public FenetreConnexion() {
 		super("Connexion serveur FTP");
 		setSize(width, height);
 		add(serveur);
 		serveur.setSize(width, 100);
 		add(info);
-		txtcommande.addActionListener(new SendCommandeAction(this,connexion));
-		info.add(txtcommande);
-		info.add(infoConnexion);
-		info.setLayout(new GridLayout(2, 1));
+		boutonConnexion.addActionListener(new connexionFTPServeur(this));
+		boutonEnvoie.addActionListener(new EnvoieAction(this));
+		boutonRecevoir.addActionListener(new RecevoirAction(this));
+		boutonSuppr.addActionListener(new SuppressionAction(this));
+		boutonQuit.addActionListener(new QuitAction(this));
+		commande.add(boutonEnvoie);
+		commande.add(boutonRecevoir);
+		commande.add(boutonSuppr);
+		commande.add(boutonQuit);
+		
+		info.add(commande);
+		commande.setLayout(new FlowLayout());
+		
+		info.setLayout(new GridLayout(2,1));
 		serveur.setLayout(new FlowLayout());		
 		serveur.add(nomServeur);
 		serveur.add(txtServeur);
@@ -59,11 +62,15 @@ public class FenetreConnexion extends JFrame {
 		serveur.add(txtPort);
 		serveur.add(labAdresseIP);
 		serveur.add(txtIP);
-		serveur.add(bouton);
-		bouton.addActionListener(new connexionFTPServeur(this));
+		serveur.add(boutonConnexion);
+		serveur.add(infoConnexion);
+		
 		setLayout(new GridLayout(2, 1));
 		setVisible(true);		
 	}
+
+
+	
 
 
 	public Label getInfoConnexion() {

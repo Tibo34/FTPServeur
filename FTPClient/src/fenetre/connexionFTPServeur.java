@@ -29,8 +29,9 @@ public class connexionFTPServeur implements ActionListener {
 	private void connexionFTP() {
 		ClientConnexion c=new ClientConnexion(host, port,fenetre);
 		fenetre.setConnexion(c);
-	      Thread t = new Thread(c);
-	       t.start();
+		fenetre.getInfoConnexion().setText("Connexion réussi.");
+	    Thread t = new Thread(c);
+	    t.start();
 	}
 
 }

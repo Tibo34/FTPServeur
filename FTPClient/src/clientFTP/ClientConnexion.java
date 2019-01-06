@@ -21,15 +21,13 @@ public class ClientConnexion implements Runnable{
 	   //saisie clavier
 	   private Scanner sc = new Scanner(System.in); 
 	   //Notre liste de commandes. Le serveur nous répondra différemment selon la commande utilisée.
-	   
 	   private ArrayList<String> listCommands = new ArrayList<String>() ;	   
 	   private static int count = 0;
 	   private String name = "Client-"; 
 	   private String path="D:\\Documents";
 	   private FenetreConnexion fenetre;
-	   private String reponse;
+	   private boolean encore = true;
 	   
-
 	   public ClientConnexion(String host, int port,FenetreConnexion f){
 		   fenetre=f;
 		   FillCommandes();
@@ -55,24 +53,21 @@ public class ClientConnexion implements Runnable{
 	      for(int i =0; i < 10; i++){
 	         try {
 	            Thread.currentThread().sleep(1000);
-
 	         } catch (InterruptedException e) {
 	            e.printStackTrace();
 	         }
-
-	         try {        
-
+	         try {       
 	            writer = new PrintWriter(connexion.getOutputStream(), true);
 	            reader = new BufferedInputStream(connexion.getInputStream());
-	            //On envoie la commande au serveur     
-	            String commande = getCommand();
-	            //String file=getFile();
-	            writer.write(commande);         
-	            writer.flush();  
-	          displayMessage("Commande " + commande + " envoyée au serveur");           
+	            //On envoie la commande au serveur
+	           //String commande = getCommand();
+	            //System.out.println(commande);	            
+	            //send(commande);     
+	           
+	          //displayMessage("Commande " + commande + " envoyée au serveur");           
 	            //On attend la réponse
-	            String response = read();
-	            System.out.println("\t * " + name + " : Réponse reçue " + response);
+	            /*String response = read();
+	            displayMessage("\t * " + name + " : Réponse reçue " + response);
 	           switch(commande) {
 	           	case "RETR"://récupération de fichier du serveur fts	           		
 	           		writeFile();
@@ -87,9 +82,9 @@ public class ClientConnexion implements Runnable{
 	           		displayEndMess();
 	           		break;
 	            default : 
-	                 // toSend = "Commande inconnu !";                     
+	                 //  "Commande inconnu !";                     
 	                  break;
-	           }
+	           }*/
 	         } catch (IOException e1) {
 	            e1.printStackTrace();
 	         }
@@ -99,18 +94,21 @@ public class ClientConnexion implements Runnable{
 	        	 e.printStackTrace();
 	         }
 	      }    
-	      writer.write("CLOSE");
-	      writer.flush();
+	     send("CLOSE");	      
 	      writer.close();
 	   }
  	   
- 	   private void displayMessage(String str) {
+ 	   public void send(String str) {
+ 		   writer.write(str);
+ 		   writer.flush();
+ 	   }
+ 	   
+ 	   public void displayMessage(String str) {
  		   fenetre.getInfoConnexion().setText(str);
  	   }
  	   
- 	   private void deleteFile() throws IOException { 		   
- 		
-		String file="";
+ 	   public void deleteFile() throws IOException { 
+ 		String file="";
 		boolean r=true;
 		while(r) {
 			file=sc.nextLine();
@@ -119,13 +117,11 @@ public class ClientConnexion implements Runnable{
 			}
 		}
 		displayMessage("Fichier envoie"+file);
-		writer.write(file);
-		writer.flush();
-		displayMessage(read());
-		
+		send(file);		
+		displayMessage(read());		
 	}
 
-	private void displayEndMess() throws IOException {
+	public void displayEndMess() throws IOException {
 		String endMess=read();
 		displayMessage(endMess);		
 	}
@@ -134,11 +130,10 @@ public class ClientConnexion implements Runnable{
  	    * Envoie de fichier au serveur
  	    * @throws IOException
  	    */
- 	  private void sendFile() throws IOException {		   
+ 	  public void sendFile() throws IOException {		   
 		   File file=getFileSend();//envoie du chemin complet	 		     
 		   String toSend= readFile(file);			
-		   writer.write(toSend);
-		   writer.flush();		 
+		 send(toSend);		   	 
           if(!toSend.equals("")) {
        	   		System.out.println("Fichier envoyé");
           }
@@ -176,8 +171,7 @@ public class ClientConnexion implements Runnable{
 	            }
 	       }
          File file = new File(reponse);
-		  writer.write(file.getName());
-		  writer.flush();
+		 send(file.getName());		 
 	      return file;		
 	}
 	
@@ -191,29 +185,25 @@ public class ClientConnexion implements Runnable{
 	            	encore=false;
 	            }
 	       }        
-		  writer.write(reponse);
-		  writer.flush();
+		send(reponse);		  
 	      return reponse;		
 	}
 
 	//Méthode qui permet d'envoyer des commandeS de façon aléatoire
 
 	   private String getCommand(){
-		   String reponse = "";
-	         boolean encore = true;
+		   encore=true;
+		   String reponse = "";	         
 	         while (encore) {
 	        	displayMessage("Vous avez le droit aux commande "+getListCommandes());
-	            reponse = fenetre.getTxtcommande().getText();
-	            if(listCommands.contains(reponse)) {
-	            	encore=false;
-	            }
+	            reponse ="";//récupération de commande	            
 	          }
 	      return reponse;
 	   }
 
 	   
 
-	   private String getListCommandes() {
+	   public String getListCommandes() {
 		   String com="";
 		   for(String str : listCommands) {
 			   com+=str+", ";
@@ -224,17 +214,17 @@ public class ClientConnexion implements Runnable{
 
 	//Méthode pour lire les réponses du serveur
 
-	   private String read() throws IOException{  
+	   public String read() throws IOException{  
 	      String response = "";
 	      int stream;
-	      byte[] b = new byte[4096];
+	      byte[] b = new byte[4096];	     
 	      stream = reader.read(b);
 	      response = new String(b, 0, stream);
 	      return response;
 	   }   
 	   
 	   
-	   private void writeFile() throws IOException {
+	   public void writeFile() throws IOException {
 		   	String fileName=getFile();
 		   	String fileText=getFileText();
 		   	 File file=new File(path+"/"+fileName);		   	 
@@ -247,12 +237,12 @@ public class ClientConnexion implements Runnable{
 			 output.close();			
 		 }
 
-	public String getReponse() {
-		return reponse;
+	public boolean getEncore() {
+		return encore;
 	}
 
-	public void setReponse(String reponse) {
-		this.reponse = reponse;
+	public void setEncore(Boolean e) {
+		this.encore = e;
 	}
 	   
 	   

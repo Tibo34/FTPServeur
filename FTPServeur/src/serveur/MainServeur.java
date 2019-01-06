@@ -2,10 +2,9 @@ package serveur;
 
 public class MainServeur {
 	
-	   public static void main(String[] args) {
-		    
+	   public static void main(String[] args) {   
 		     
-		      int port = 2346;
+		      int port = 2345;
 		      
 		      //initialisation du serveur
 		      FtpServeur ts = new FtpServeur(port);
