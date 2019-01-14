@@ -1,16 +1,23 @@
 package clientFTP;
 
 import java.awt.Checkbox;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageInputStream;
 
 import fenetre.FenetreConnexion;
 
@@ -27,7 +34,7 @@ public class ClientConnexion implements Runnable{
 	   private String name = "Client-"; 
 	   private String path="D:\\Documents";
 	   private FenetreConnexion fenetre;
-	   private boolean encore = true;
+	   
 	   
 	   public ClientConnexion(String host, int port,FenetreConnexion f){
 		   fenetre=f;
@@ -49,6 +56,7 @@ public class ClientConnexion implements Runnable{
 		  listCommands.add("QUIT");					
  	   }
 
+ 	   
  	   public void run(){      
  		   //limite de connexion 10.
 	      for(int i =0; i < 10; i++){
@@ -60,32 +68,7 @@ public class ClientConnexion implements Runnable{
 	         try {       
 	            writer = new PrintWriter(connexion.getOutputStream(), true);
 	            reader = new BufferedInputStream(connexion.getInputStream());
-	            //On envoie la commande au serveur
-	           //String commande = getCommand();
-	            //System.out.println(commande);	            
-	            //send(commande);     
-	           
-	          //displayMessage("Commande " + commande + " envoyée au serveur");           
-	            //On attend la réponse
-	            /*String response = read();
-	            displayMessage("\t * " + name + " : Réponse reçue " + response);
-	           switch(commande) {
-	           	case "RETR"://récupération de fichier du serveur fts	           		
-	           		writeFile();
-	           		break;
-	           	case "STOR": // envoie de fichier sur le serveur
-	           		sendFile();
-	           		break;
-	           	case "DELE":	           		
-	           		deleteFile();
-	           		break;
-	           	case "QUIT":
-	           		displayEndMess();
-	           		break;
-	            default : 
-	                 //  "Commande inconnu !";                     
-	                  break;
-	           }*/
+	            
 	         } catch (IOException e1) {
 	            e1.printStackTrace();
 	         }
@@ -144,19 +127,46 @@ public class ClientConnexion implements Runnable{
         	  System.out.println("Fichier  non envoyé");
           }          
 	}
+ 	 
  	  
+ 	  /**
+ 	   * Envoie le fichier par la socket
+ 	   * @param file
+ 	   * @throws IOException
+ 	   */
  	  public void sendFile(File file) throws IOException {
  		 send(file.getName());
- 		String toSend= readFile(file);			
-		 send(toSend);		   	 
-          if(!toSend.equals("")) {
-       	   		System.out.println("Fichier envoyé");
-          }
-          else {
-        	  System.out.println("Fichier  non envoyé");
-          }   
+ 		 String toSend=readFile(file); 				   	 
+ 		 send(toSend);
 		
 	}
+
+ 	  /**
+	   * lecture du contenut du fichier pour l'envoie
+	   * @param f
+	   * @return
+	   * @throws IOException
+	   */
+	 private String readFile(File f) throws IOException {		   
+		   String str=""; 
+		   if(f.exists()) {			   
+			   FileInputStream file=new FileInputStream(f);			   
+			   int lettre;
+			   while((lettre=file.read())!=-1) {
+				    str+=(char)lettre;
+			   }
+	     }
+		return str;
+	  }
+
+	/*private boolean isImage(File file) {
+		String[]fileName=file.getName().split(".");
+		ArrayList<String> images=new ArrayList<String>();
+		images.add("png");
+		images.add("jpg");
+		images.add("gif");
+		return images.contains(fileName[1]);
+	}*/
 
 	private File getFileSend() {		
 			String reponse = "";
@@ -174,24 +184,6 @@ public class ClientConnexion implements Runnable{
 	}
 
 	/**
- 	   * lecture du fichier pour l'envoie
- 	   * @param f
- 	   * @return
- 	   * @throws IOException
- 	   */
- 	 private String readFile(File f) throws IOException {		   
-		   String str=""; 
-		   if(f.exists()) {			   
-			   FileInputStream file=new FileInputStream(f);			   
-			   int lettre;
-			   while((lettre=file.read())!=-1) {
-				    str+=(char)lettre;
-			   }
-         }
-		return str;
-	  }
- 	 
- 	 /**
  	  * récupération du texte du fichier
  	  * @return
  	  * @throws IOException
@@ -246,7 +238,7 @@ public class ClientConnexion implements Runnable{
 	//Méthode qui permet d'envoyer des commandeS de façon aléatoire
 
 	   private String getCommand(){
-		   encore=true;
+		   boolean encore=true;
 		   String reponse = "";	         
 	         while (encore) {
 	        	displayMessage("Vous avez le droit aux commande "+getListCommandes());
@@ -269,20 +261,14 @@ public class ClientConnexion implements Runnable{
 	//Méthode pour lire les réponses du serveur
 
 	   public String read() throws IOException{  
-		  byte[] b = new byte[4096];
+		  byte[] b = new byte[4096];		  
 		  int stream = reader.read(b);
 		  System.out.println(new String(b, 0, stream));
 	      return new String(b, 0, stream);
 	   }   
 	   
 	   
-	   public boolean getEncore() {
-		return encore;
-	}
-
-	public void setEncore(Boolean e) {
-		this.encore = e;
-	}
+	 
 	   
 	   
 

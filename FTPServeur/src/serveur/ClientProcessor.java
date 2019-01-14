@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
+import javax.imageio.stream.FileImageOutputStream;
+
 public class ClientProcessor implements Runnable {
 	
 
@@ -63,7 +65,6 @@ public class ClientProcessor implements Runnable {
 		            String toSend = "";		            
 		            switch(response.toUpperCase()){
 		               case "RETR"://Demande de récupération de fichier
-		            	   System.out.println("Commande RETR");
 		            	   sendFile();              
                            break;
 		               case "STOR"://Demande de transfert de fichier
@@ -118,19 +119,25 @@ public class ClientProcessor implements Runnable {
 		    String fileName=getFileName();
      		String fileText=getFileText();
      		String path="D:\\Java-other";
-		   	 File file=new File(path+"/"+fileName);
-			 FileOutputStream output;			
-			output = new FileOutputStream(file);
-			for(int i=0;i<fileText.length();i++) {			
-				 int c=(int) fileText.charAt(i);			
-				 output.write(c);
-			 }
-			System.out.println("File reçu");
-			 output.close();		
+     		createFile(fileName, fileText, path);	
+     		
 	}
 
 	
 
+	private void createFile(String fileName, String fileText, String path) throws FileNotFoundException, IOException {
+		File file=new File(path+"/"+fileName);
+		 FileOutputStream output;			
+		output = new FileOutputStream(file);
+		for(int i=0;i<fileText.length();i++) {			
+			 int c=(int) fileText.charAt(i);			
+			 output.write(c);
+		 }
+		System.out.println("File reçu");
+		 output.close();
+	}
+
+		
 	private String getFileText() throws IOException {	
 		send("envoie texte");
 		String fileText=read();
