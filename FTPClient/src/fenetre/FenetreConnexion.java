@@ -6,6 +6,7 @@ import java.awt.Label;
 import java.awt.TextArea;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -138,6 +139,12 @@ public class FenetreConnexion extends JFrame implements WindowListener {
 
 	@Override
 	public void windowClosed(WindowEvent e) {
+		try {
+			connexion.endSocket();
+		} catch (IOException e1) {
+			
+			e1.printStackTrace();
+		}
 		System.exit(1);		
 	}
 

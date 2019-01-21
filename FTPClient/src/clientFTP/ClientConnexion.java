@@ -78,8 +78,7 @@ public class ClientConnexion implements Runnable{
 	        	 e.printStackTrace();
 	         }
 	      }    
-	     send("CLOSE");	      
-	      writer.close();
+	     
 	   }
  	   
  	   public void send(String str) {
@@ -118,8 +117,9 @@ public class ClientConnexion implements Runnable{
  	    */
  	  public void sendFile() throws IOException {		   
 		   File file=getFileSend();//envoie du chemin complet		  
-		   String toSend= readFile(file);			
-		 send(toSend);		   	 
+		   String toSend= readFile(file);
+		   System.out.println(read());
+		   send(toSend);		   	 
           if(!toSend.equals("")) {
        	   		System.out.println("Fichier envoyé");
           }
@@ -136,14 +136,16 @@ public class ClientConnexion implements Runnable{
  	   */
  	  public void sendFile(File file) throws IOException {
  		 send(file.getName());
- 		 send(new Long(file.length()).toString()); 		 
+ 		 Long size=new Long(file.length());
+ 		 System.out.println(size);
+ 		 send(size.toString()); 		 
  		String toSend=readFile(file); 				   	 
  		 send(toSend);
 		
 	}
 
  	  /**
-	   * lecture du contenut du fichier pour l'envoie
+	   * lecture du contenu du fichier pour l'envoie
 	   * @param f
 	   * @return
 	   * @throws IOException
@@ -157,6 +159,7 @@ public class ClientConnexion implements Runnable{
 				    str+=(char)lettre;
 			   }
 	     }
+		   send(new Integer(str.length()).toString());
 		return str;
 	  }
 
@@ -180,8 +183,7 @@ public class ClientConnexion implements Runnable{
 	            }
 	       }
 	     File file = new File(reponse);
-		 send(file.getName());		 
-	      return file;		
+		 return file;		
 	}
 
 	/**
@@ -266,7 +268,13 @@ public class ClientConnexion implements Runnable{
 		  int stream = reader.read(b);
 		  System.out.println(new String(b, 0, stream));
 	      return new String(b, 0, stream);
-	   }   
+	   }
+
+	public void endSocket() throws IOException {
+		send("CLOSE");   
+	    writer.close();
+	    connexion.close();
+	}   
 	   
 	   
 	 

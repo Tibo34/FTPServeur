@@ -20,6 +20,7 @@ public class QuitAction implements ActionListener {
 		ClientConnexion connexion=fenetre.getConnexion();
 		connexion.send("QUIT");	
 		try {
+			connexion.endSocket();
 			connexion.displayEndMess();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
