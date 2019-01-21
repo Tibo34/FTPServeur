@@ -3,6 +3,7 @@ package fenetre;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
+import java.awt.TextArea;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -39,6 +40,7 @@ public class FenetreConnexion extends JFrame implements WindowListener {
 	private JButton boutonSuppr=new JButton("Supprimer fichier");
 	private JButton boutonQuit=new JButton("Quitter");
 	private Label infoConnexion=new Label("information serveur.");
+	private TextArea text=new TextArea();
 	private ClientConnexion connexion=null;
 	
 	public FenetreConnexion() {
@@ -47,6 +49,7 @@ public class FenetreConnexion extends JFrame implements WindowListener {
 		add(serveur);
 		serveur.setSize(width, 100);
 		add(info);
+		
 		boutonConnexion.addActionListener(new connexionFTPServeur(this));
 		boutonEnvoie.addActionListener(new EnvoieAction(this));
 		boutonRecevoir.addActionListener(new RecevoirAction(this));
@@ -69,8 +72,9 @@ public class FenetreConnexion extends JFrame implements WindowListener {
 		serveur.add(txtIP);
 		serveur.add(boutonConnexion);
 		serveur.add(infoConnexion);
-		
-		setLayout(new GridLayout(2, 1));
+		add(text);
+		text.setEditable(false);
+		setLayout(new GridLayout(3, 1));
 		setVisible(true);		
 	}
 
@@ -164,6 +168,15 @@ public class FenetreConnexion extends JFrame implements WindowListener {
 	@Override
 	public void windowOpened(WindowEvent e) {
 		// TODO Auto-generated method stub		
+	}
+
+
+
+
+
+	public void setTextArea(String str) {
+		text.setText(str);
+		
 	}
 	
 	

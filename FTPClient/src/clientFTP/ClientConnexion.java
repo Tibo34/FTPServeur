@@ -117,7 +117,7 @@ public class ClientConnexion implements Runnable{
  	    * @throws IOException
  	    */
  	  public void sendFile() throws IOException {		   
-		   File file=getFileSend();//envoie du chemin complet	 		     
+		   File file=getFileSend();//envoie du chemin complet		  
 		   String toSend= readFile(file);			
 		 send(toSend);		   	 
           if(!toSend.equals("")) {
@@ -136,7 +136,8 @@ public class ClientConnexion implements Runnable{
  	   */
  	  public void sendFile(File file) throws IOException {
  		 send(file.getName());
- 		 String toSend=readFile(file); 				   	 
+ 		 send(new Long(file.length()).toString()); 		 
+ 		String toSend=readFile(file); 				   	 
  		 send(toSend);
 		
 	}
